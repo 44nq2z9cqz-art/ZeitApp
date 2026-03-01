@@ -1,1 +1,1127 @@
+<!DOCTYPE html>
 
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ZeitApp">
+<meta name="theme-color" content="#0a0a0f">
+<title>ZeitApp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1c1c26;
+    --border: rgba(255,255,255,0.07);
+    --accent: #7c6aff;
+    --accent2: #ff6b6b;
+    --text: #f0f0f8;
+    --muted: rgba(240,240,248,0.4);
+    --green: #4ade80;
+    --mono: 'DM Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+
+- { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+background: var(–bg);
+color: var(–text);
+font-family: var(–sans);
+height: 100%;
+overflow: hidden;
+position: fixed;
+width: 100%;
+}
+
+/* ── Layout ── */
+#app {
+display: flex;
+flex-direction: column;
+height: 100dvh;
+max-width: 430px;
+margin: 0 auto;
+position: relative;
+}
+
+/* ── Tab Bar ── */
+#tabbar {
+display: flex;
+background: var(–surface);
+border-top: 1px solid var(–border);
+padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+flex-shrink: 0;
+z-index: 10;
+}
+.tab {
+flex: 1;
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 3px;
+padding: 4px;
+cursor: pointer;
+transition: opacity 0.2s;
+border: none;
+background: none;
+color: var(–muted);
+font-family: var(–sans);
+font-size: 10px;
+font-weight: 600;
+letter-spacing: 0.05em;
+text-transform: uppercase;
+}
+.tab.active { color: var(–accent); }
+.tab svg { width: 22px; height: 22px; }
+
+/* ── Pages ── */
+.page {
+display: none;
+flex: 1;
+overflow-y: auto;
+overflow-x: hidden;
+-webkit-overflow-scrolling: touch;
+padding: 0 20px 20px;
+padding-top: max(20px, env(safe-area-inset-top));
+}
+.page.active { display: flex; flex-direction: column; }
+
+h1.page-title {
+font-size: 28px;
+font-weight: 800;
+letter-spacing: -0.02em;
+margin-bottom: 24px;
+color: var(–text);
+}
+
+/* ── Starten Page ── */
+#status-card {
+background: var(–surface);
+border: 1px solid var(–border);
+border-radius: 20px;
+padding: 28px;
+text-align: center;
+margin-bottom: 32px;
+transition: all 0.4s ease;
+position: relative;
+overflow: hidden;
+}
+#status-card::before {
+content: ‘’;
+position: absolute;
+inset: 0;
+background: radial-gradient(ellipse at 50% 0%, rgba(124,106,255,0.12) 0%, transparent 70%);
+transition: opacity 0.4s;
+}
+#status-card.running::before {
+background: radial-gradient(ellipse at 50% 0%, rgba(255,107,107,0.15) 0%, transparent 70%);
+}
+#status-icon {
+font-size: 48px;
+margin-bottom: 12px;
+display: block;
+transition: transform 0.3s;
+}
+#timer-display {
+font-family: var(–mono);
+font-size: 52px;
+font-weight: 300;
+letter-spacing: -0.02em;
+color: var(–text);
+line-height: 1;
+margin-bottom: 8px;
+}
+#status-label {
+font-size: 13px;
+color: var(–muted);
+letter-spacing: 0.08em;
+text-transform: uppercase;
+font-weight: 600;
+}
+#start-time-label {
+font-family: var(–mono);
+font-size: 12px;
+color: var(–muted);
+margin-top: 6px;
+}
+
+/* ── Main Button ── */
+#btn-wrap {
+display: flex;
+justify-content: center;
+margin-bottom: 40px;
+position: relative;
+}
+#main-btn {
+width: 180px;
+height: 180px;
+border-radius: 50%;
+border: none;
+cursor: pointer;
+font-family: var(–sans);
+font-size: 14px;
+font-weight: 700;
+letter-spacing: 0.15em;
+text-transform: uppercase;
+color: white;
+background: var(–accent);
+box-shadow: 0 0 40px rgba(124,106,255,0.35), 0 8px 32px rgba(0,0,0,0.4);
+transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+gap: 10px;
+position: relative;
+overflow: hidden;
+-webkit-appearance: none;
+}
+#main-btn::before {
+content: ‘’;
+position: absolute;
+inset: -50%;
+background: radial-gradient(ellipse, rgba(255,255,255,0.15) 0%, transparent 60%);
+transform: translateY(-50%);
+transition: transform 0.3s;
+}
+#main-btn:active { transform: scale(0.93); }
+#main-btn.running {
+background: var(–accent2);
+box-shadow: 0 0 40px rgba(255,107,107,0.4), 0 8px 32px rgba(0,0,0,0.4);
+}
+#main-btn svg { width: 44px; height: 44px; }
+#pulse-ring {
+position: absolute;
+width: 180px;
+height: 180px;
+border-radius: 50%;
+border: 2px solid var(–accent2);
+opacity: 0;
+pointer-events: none;
+}
+#pulse-ring.active {
+animation: pulse 2s ease-out infinite;
+}
+@keyframes pulse {
+0% { transform: scale(1); opacity: 0.6; }
+100% { transform: scale(1.4); opacity: 0; }
+}
+#btn-hint {
+position: absolute;
+bottom: -24px;
+font-size: 12px;
+color: var(–muted);
+font-weight: 600;
+letter-spacing: 0.05em;
+white-space: nowrap;
+}
+
+/* ── Offset hints ── */
+#offset-hints {
+display: flex;
+flex-direction: column;
+gap: 6px;
+margin-bottom: 24px;
+min-height: 0;
+}
+.offset-hint {
+font-size: 12px;
+color: var(–muted);
+text-align: center;
+font-family: var(–mono);
+}
+
+/* ── Today summary ── */
+#today-summary {
+background: var(–surface);
+border: 1px solid var(–border);
+border-radius: 14px;
+padding: 16px 20px;
+display: none;
+}
+#today-summary.visible { display: block; }
+#today-summary-label {
+font-size: 10px;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+color: var(–muted);
+margin-bottom: 8px;
+font-weight: 600;
+}
+#today-summary-row {
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+#today-count { font-size: 13px; color: var(–muted); }
+#today-total {
+font-family: var(–mono);
+font-size: 20px;
+font-weight: 500;
+color: var(–accent);
+}
+
+/* ── Toast ── */
+#toast {
+position: fixed;
+top: max(20px, env(safe-area-inset-top));
+left: 50%;
+transform: translateX(-50%) translateY(-80px);
+background: var(–surface2);
+border: 1px solid var(–border);
+border-radius: 100px;
+padding: 10px 20px;
+font-size: 13px;
+font-weight: 600;
+white-space: nowrap;
+z-index: 100;
+transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+max-width: calc(100vw - 40px);
+white-space: normal;
+text-align: center;
+}
+#toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ── Verlauf Page ── */
+.section-header {
+font-size: 11px;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+color: var(–muted);
+font-weight: 600;
+padding: 20px 0 8px;
+}
+.entry-row {
+display: flex;
+align-items: center;
+padding: 12px 16px;
+background: var(–surface);
+border: 1px solid var(–border);
+border-radius: 12px;
+margin-bottom: 6px;
+gap: 12px;
+}
+.entry-times {
+flex: 1;
+font-family: var(–mono);
+font-size: 14px;
+color: var(–text);
+}
+.entry-arrow { color: var(–muted); font-size: 12px; margin: 0 4px; }
+.entry-running { color: var(–accent2); }
+.entry-duration {
+font-family: var(–mono);
+font-size: 14px;
+font-weight: 500;
+color: var(–text);
+}
+.entry-delete {
+background: none;
+border: none;
+color: var(–muted);
+cursor: pointer;
+padding: 4px;
+font-size: 16px;
+line-height: 1;
+transition: color 0.2s;
+}
+.entry-delete:active { color: var(–accent2); }
+
+.day-total {
+background: rgba(124,106,255,0.08);
+border: 1px solid rgba(124,106,255,0.15);
+border-radius: 12px;
+padding: 12px 16px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 6px;
+}
+.day-total-label { font-size: 12px; color: var(–muted); font-weight: 600; }
+.day-total-value {
+font-family: var(–mono);
+font-size: 18px;
+font-weight: 500;
+color: var(–accent);
+}
+
+.empty-state {
+flex: 1;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+gap: 12px;
+color: var(–muted);
+font-size: 14px;
+padding: 40px;
+text-align: center;
+}
+.empty-state .icon { font-size: 48px; opacity: 0.4; }
+
+/* ── Monat Page ── */
+.month-nav {
+display: flex;
+align-items: center;
+justify-content: space-between;
+margin-bottom: 20px;
+}
+.month-nav-btn {
+width: 40px; height: 40px;
+border-radius: 50%;
+background: var(–surface);
+border: 1px solid var(–border);
+color: var(–text);
+font-size: 18px;
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: center;
+transition: all 0.2s;
+-webkit-appearance: none;
+}
+.month-nav-btn:active { transform: scale(0.9); background: var(–surface2); }
+.month-nav-btn:disabled { opacity: 0.3; }
+#month-title {
+font-size: 18px;
+font-weight: 700;
+letter-spacing: -0.01em;
+}
+
+.month-total-card {
+background: var(–surface);
+border: 1px solid var(–border);
+border-radius: 20px;
+padding: 28px;
+text-align: center;
+margin-bottom: 16px;
+position: relative;
+overflow: hidden;
+}
+.month-total-card::before {
+content: ‘’;
+position: absolute;
+inset: 0;
+background: radial-gradient(ellipse at 50% 0%, rgba(124,106,255,0.1) 0%, transparent 70%);
+}
+.month-total-sublabel {
+font-size: 11px;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+color: var(–muted);
+font-weight: 600;
+margin-bottom: 8px;
+position: relative;
+}
+#month-total-value {
+font-family: var(–mono);
+font-size: 44px;
+font-weight: 300;
+color: var(–accent);
+position: relative;
+line-height: 1;
+}
+
+.month-stats-row {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 12px;
+margin-bottom: 20px;
+}
+.stat-card {
+background: var(–surface);
+border: 1px solid var(–border);
+border-radius: 16px;
+padding: 16px;
+text-align: center;
+}
+.stat-value {
+font-family: var(–mono);
+font-size: 22px;
+font-weight: 500;
+margin-bottom: 4px;
+}
+.stat-label { font-size: 11px; color: var(–muted); font-weight: 600; letter-spacing: 0.05em; }
+
+.month-day-row {
+background: var(–surface);
+border: 1px solid var(–border);
+border-radius: 12px;
+padding: 12px 16px;
+margin-bottom: 6px;
+}
+.month-day-header {
+display: flex;
+justify-content: space-between;
+margin-bottom: 8px;
+}
+.month-day-name { font-size: 13px; font-weight: 600; }
+.month-day-dur {
+font-family: var(–mono);
+font-size: 13px;
+font-weight: 500;
+color: var(–accent);
+}
+.bar-bg {
+height: 4px;
+background: rgba(255,255,255,0.06);
+border-radius: 2px;
+overflow: hidden;
+}
+.bar-fill {
+height: 100%;
+background: var(–accent);
+border-radius: 2px;
+transition: width 0.6s ease;
+}
+
+/* ── Einstellungen Page ── */
+.settings-section {
+background: var(–surface);
+border: 1px solid var(–border);
+border-radius: 16px;
+overflow: hidden;
+margin-bottom: 16px;
+}
+.settings-section-title {
+font-size: 11px;
+letter-spacing: 0.1em;
+text-transform: uppercase;
+color: var(–muted);
+font-weight: 600;
+padding: 12px 16px 0;
+}
+.settings-row {
+padding: 16px;
+border-bottom: 1px solid var(–border);
+}
+.settings-row:last-child { border-bottom: none; }
+.settings-row-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 10px;
+}
+.settings-row-label { font-size: 15px; font-weight: 600; }
+.settings-row-value {
+font-family: var(–mono);
+font-size: 14px;
+font-weight: 500;
+color: var(–accent);
+}
+.settings-row-value.off { color: var(–muted); }
+
+input[type=range] {
+width: 100%;
+-webkit-appearance: none;
+height: 4px;
+border-radius: 2px;
+background: var(–surface2);
+outline: none;
+cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+-webkit-appearance: none;
+width: 22px; height: 22px;
+border-radius: 50%;
+background: var(–accent);
+box-shadow: 0 2px 8px rgba(124,106,255,0.4);
+cursor: pointer;
+}
+.settings-footer-text {
+font-size: 12px;
+color: var(–muted);
+padding: 8px 16px 16px;
+line-height: 1.5;
+}
+
+.nfc-info {
+background: rgba(124,106,255,0.08);
+border: 1px solid rgba(124,106,255,0.2);
+border-radius: 16px;
+padding: 20px;
+margin-bottom: 16px;
+}
+.nfc-info-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+.nfc-info-text { font-size: 13px; color: var(–muted); line-height: 1.6; }
+.nfc-info-url {
+font-family: var(–mono);
+font-size: 12px;
+color: var(–accent);
+background: rgba(124,106,255,0.1);
+padding: 8px 12px;
+border-radius: 8px;
+margin-top: 10px;
+word-break: break-all;
+}
+
+/* ── Scrollbar ── */
+.page::-webkit-scrollbar { display: none; }
+</style>
+
+</head>
+<body>
+<div id="app">
+
+  <!-- ══ STARTEN ══ -->
+
+  <div class="page active" id="page-start">
+    <h1 class="page-title">Zeiterfassung</h1>
+
+```
+<div id="status-card">
+  <span id="status-icon">🕐</span>
+  <div id="timer-display">00:00</div>
+  <div id="status-label">Bereit</div>
+  <div id="start-time-label"></div>
+</div>
+
+<div id="btn-wrap">
+  <div id="pulse-ring"></div>
+  <button id="main-btn" onclick="toggleTimer()">
+    <svg id="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M8 5v14l11-7z"/>
+    </svg>
+    <span id="btn-label">STARTEN</span>
+  </button>
+  <span id="btn-hint">Tippen zum Starten</span>
+</div>
+
+<div id="offset-hints"></div>
+<div id="today-summary">
+  <div id="today-summary-label">Heute</div>
+  <div id="today-summary-row">
+    <span id="today-count"></span>
+    <span id="today-total"></span>
+  </div>
+</div>
+```
+
+  </div>
+
+  <!-- ══ VERLAUF ══ -->
+
+  <div class="page" id="page-verlauf">
+    <h1 class="page-title">Verlauf</h1>
+    <div id="verlauf-content"></div>
+  </div>
+
+  <!-- ══ MONAT ══ -->
+
+  <div class="page" id="page-monat">
+    <h1 class="page-title">Monat</h1>
+    <div class="month-nav">
+      <button class="month-nav-btn" onclick="changeMonth(-1)">‹</button>
+      <span id="month-title"></span>
+      <button class="month-nav-btn" id="month-next-btn" onclick="changeMonth(1)">›</button>
+    </div>
+    <div id="monat-content"></div>
+  </div>
+
+  <!-- ══ EINSTELLUNGEN ══ -->
+
+  <div class="page" id="page-einst">
+    <h1 class="page-title">Einstellungen</h1>
+
+```
+<div class="settings-section">
+  <div class="settings-section-title">Zeitversatz beim Starten</div>
+  <div class="settings-row">
+    <div class="settings-row-header">
+      <span class="settings-row-label">Start-Verzoegerung</span>
+      <span class="settings-row-value" id="start-val-label">Aus</span>
+    </div>
+    <input type="range" id="start-slider" min="0" max="300" step="5" value="0"
+           oninput="updateSlider('start')">
+    <div class="settings-footer-text">Zeit beginnt X Sekunden nach dem Tippen.</div>
+  </div>
+</div>
+
+<div class="settings-section">
+  <div class="settings-section-title">Zeitversatz beim Stoppen</div>
+  <div class="settings-row">
+    <div class="settings-row-header">
+      <span class="settings-row-label">Stopp-Vorlauf</span>
+      <span class="settings-row-value" id="stopp-val-label">Aus</span>
+    </div>
+    <input type="range" id="stopp-slider" min="0" max="300" step="5" value="0"
+           oninput="updateSlider('stopp')">
+    <div class="settings-footer-text">Zeit endet X Sekunden vor dem Tippen.</div>
+  </div>
+</div>
+
+<div class="nfc-info">
+  <div class="nfc-info-title">NFC-Kurzbefehl einrichten</div>
+  <div class="nfc-info-text">
+    Erstelle in der Kurzbefehle-App einen Kurzbefehl mit der Aktion "URL oeffnen" und der folgenden URL. Verknuepfe ihn mit einem NFC-Tag als Automation.
+  </div>
+  <div class="nfc-info-url" id="nfc-url-display"></div>
+</div>
+
+<div class="settings-section">
+  <div class="settings-section-title">Daten</div>
+  <div class="settings-row">
+    <button onclick="allesDaten()" style="background:none;border:none;color:var(--muted);font-family:var(--sans);font-size:14px;cursor:pointer;width:100%;text-align:left;padding:0;">
+      Alle Daten loeschen...
+    </button>
+  </div>
+</div>
+
+<div style="height:20px"></div>
+```
+
+  </div>
+
+  <!-- ══ TABBAR ══ -->
+
+  <div id="tabbar">
+    <button class="tab active" onclick="showTab('start')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      Starten
+    </button>
+    <button class="tab" onclick="showTab('verlauf')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+      Verlauf
+    </button>
+    <button class="tab" onclick="showTab('monat')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+      Monat
+    </button>
+    <button class="tab" onclick="showTab('einst')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+      Einstellungen
+    </button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════
+// DATEN
+// ══════════════════════════════════════════
+
+function ladeEintraege() {
+  try { return JSON.parse(localStorage.getItem('zeiteintraege') || '[]'); } catch { return []; }
+}
+function speichereEintraege(e) {
+  localStorage.setItem('zeiteintraege', JSON.stringify(e));
+}
+function ladeEinstellungen() {
+  return {
+    startSek: parseInt(localStorage.getItem('startSek') || '0'),
+    stoppSek: parseInt(localStorage.getItem('stoppSek') || '0'),
+  };
+}
+
+function aktiverEintrag() {
+  return ladeEintraege().find(e => !e.ende) || null;
+}
+
+function tagesgesamtHeute() {
+  const heute = tagesKey(new Date());
+  return ladeEintraege()
+    .filter(e => e.datum === heute && e.ende)
+    .reduce((s, e) => s + (e.ende - e.start), 0);
+}
+
+function tagesKey(d) {
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+function formatDauer(ms) {
+  const s = Math.floor(Math.max(0, ms) / 1000);
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  if (h > 0) return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')} Std`;
+  return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')} Min`;
+}
+
+function formatZeit(ts) {
+  const d = new Date(ts);
+  return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+}
+
+// ══════════════════════════════════════════
+// TOGGLE
+// ══════════════════════════════════════════
+
+function toggleTimer() {
+  const einst = ladeEinstellungen();
+  const jetzt = Date.now();
+  const aktiv = aktiverEintrag();
+
+  if (aktiv) {
+    // STOPPEN
+    const eintraege = ladeEintraege();
+    const idx = eintraege.findIndex(e => !e.ende);
+    const ende = jetzt - (einst.stoppSek * 1000);
+    eintraege[idx].ende = ende;
+    speichereEintraege(eintraege);
+    stopTimer();
+    const dauer = ende - eintraege[idx].start;
+    const tagesges = tagesgesamtHeute();
+    const msg = `Gestoppt: ${formatDauer(dauer)}  |  Heute: ${formatDauer(tagesges)}`;
+    zeigeToast(msg);
+    sendeNotification('Aufzeichnung gestoppt', `Dauer: ${formatDauer(dauer)} | Heute: ${formatDauer(tagesges)}`);
+  } else {
+    // STARTEN
+    const start = jetzt + (einst.startSek * 1000);
+    const eintrag = {
+      id: jetzt,
+      start: start,
+      ende: null,
+      datum: tagesKey(new Date(start))
+    };
+    const eintraege = ladeEintraege();
+    eintraege.push(eintrag);
+    speichereEintraege(eintraege);
+    startTimer();
+    const msg = einst.startSek > 0
+      ? `Gestartet (${einst.startSek} Sek. verzoegert)`
+      : 'Aufzeichnung gestartet';
+    zeigeToast(msg);
+    sendeNotification('Aufzeichnung gestartet', `Beginn: ${formatZeit(start)}`);
+  }
+  aktualisiereStartView();
+}
+
+// ══════════════════════════════════════════
+// TIMER ANZEIGE
+// ══════════════════════════════════════════
+
+let timerInterval = null;
+
+function startTimer() {
+  stopTimer();
+  timerInterval = setInterval(aktualisiereTimerAnzeige, 1000);
+}
+
+function stopTimer() {
+  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
+}
+
+function aktualisiereTimerAnzeige() {
+  const aktiv = aktiverEintrag();
+  if (!aktiv) { stopTimer(); aktualisiereStartView(); return; }
+  const vergangen = Date.now() - aktiv.start;
+  const s = Math.floor(Math.max(0, vergangen) / 1000);
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  document.getElementById('timer-display').textContent = h > 0
+    ? `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`
+    : `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
+
+function aktualisiereStartView() {
+  const aktiv = aktiverEintrag();
+  const card = document.getElementById('status-card');
+  const btn = document.getElementById('main-btn');
+  const icon = document.getElementById('btn-icon');
+  const pulse = document.getElementById('pulse-ring');
+  const einst = ladeEinstellungen();
+
+  if (aktiv) {
+    card.classList.add('running');
+    btn.classList.add('running');
+    pulse.classList.add('active');
+    document.getElementById('status-icon').textContent = '⏱';
+    document.getElementById('status-label').textContent = 'Laeuft';
+    document.getElementById('start-time-label').textContent = 'Gestartet: ' + formatZeit(aktiv.start);
+    icon.innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
+    document.getElementById('btn-label').textContent = 'STOPPEN';
+    document.getElementById('btn-hint').textContent = 'Tippen zum Stoppen';
+    startTimer();
+    aktualisiereTimerAnzeige();
+  } else {
+    card.classList.remove('running');
+    btn.classList.remove('running');
+    pulse.classList.remove('active');
+    document.getElementById('status-icon').textContent = '🕐';
+    document.getElementById('timer-display').textContent = '00:00';
+    document.getElementById('status-label').textContent = 'Bereit';
+    document.getElementById('start-time-label').textContent = '';
+    icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+    document.getElementById('btn-label').textContent = 'STARTEN';
+    document.getElementById('btn-hint').textContent = 'Tippen zum Starten';
+    stopTimer();
+  }
+
+  // Offset hints
+  const hints = document.getElementById('offset-hints');
+  hints.innerHTML = '';
+  if (einst.startSek > 0) hints.innerHTML += `<div class="offset-hint">Start verzoegert um ${einst.startSek} Sek.</div>`;
+  if (einst.stoppSek > 0) hints.innerHTML += `<div class="offset-hint">Stopp vorgezogen um ${einst.stoppSek} Sek.</div>`;
+
+  // Today summary
+  const heute = tagesKey(new Date());
+  const heuteEintraege = ladeEintraege().filter(e => e.datum === heute && e.ende);
+  const summary = document.getElementById('today-summary');
+  if (heuteEintraege.length > 0) {
+    summary.classList.add('visible');
+    document.getElementById('today-count').textContent = `${heuteEintraege.length} Eintraege`;
+    document.getElementById('today-total').textContent = formatDauer(tagesgesamtHeute());
+  } else {
+    summary.classList.remove('visible');
+  }
+}
+
+// ══════════════════════════════════════════
+// VERLAUF
+// ══════════════════════════════════════════
+
+function renderVerlauf() {
+  const container = document.getElementById('verlauf-content');
+  const eintraege = ladeEintraege().slice().reverse();
+
+  if (eintraege.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">🕐</div><div>Noch keine Eintraege.<br>Starte eine Aufzeichnung!</div></div>';
+    return;
+  }
+
+  // Gruppieren nach Datum
+  const gruppen = {};
+  eintraege.forEach(e => {
+    if (!gruppen[e.datum]) gruppen[e.datum] = [];
+    gruppen[e.datum].push(e);
+  });
+
+  let html = '';
+  Object.keys(gruppen).sort((a,b) => b.localeCompare(a)).forEach(datum => {
+    const gruppe = gruppen[datum];
+    const d = new Date(datum + 'T12:00:00');
+    const label = istHeute(datum) ? 'Heute'
+      : istGestern(datum) ? 'Gestern'
+      : d.toLocaleDateString('de-DE', {weekday:'long', day:'numeric', month:'long'});
+
+    html += `<div class="section-header">${label}</div>`;
+
+    gruppe.forEach(e => {
+      const dauer = e.ende ? formatDauer(e.ende - e.start) : 'laeuft...';
+      const endeStr = e.ende ? formatZeit(e.ende) : `<span class="entry-running">laeuft</span>`;
+      html += `<div class="entry-row">
+        <div class="entry-times">${formatZeit(e.start)}<span class="entry-arrow">›</span>${endeStr}</div>
+        <div class="entry-duration">${dauer}</div>
+        <button class="entry-delete" onclick="loescheEintrag(${e.id})">✕</button>
+      </div>`;
+    });
+
+    const abgeschlossen = gruppe.filter(e => e.ende);
+    if (abgeschlossen.length > 0) {
+      const gesamt = abgeschlossen.reduce((s,e) => s + (e.ende - e.start), 0);
+      html += `<div class="day-total">
+        <div class="day-total-label">Tagesgesamt · ${abgeschlossen.length} Eintraege</div>
+        <div class="day-total-value">${formatDauer(gesamt)}</div>
+      </div>`;
+    }
+  });
+
+  container.innerHTML = html;
+}
+
+function loescheEintrag(id) {
+  if (!confirm('Eintrag loeschen?')) return;
+  const eintraege = ladeEintraege().filter(e => e.id !== id);
+  speichereEintraege(eintraege);
+  renderVerlauf();
+  aktualisiereStartView();
+}
+
+function istHeute(datum) { return datum === tagesKey(new Date()); }
+function istGestern(datum) {
+  const g = new Date(); g.setDate(g.getDate()-1);
+  return datum === tagesKey(g);
+}
+
+// ══════════════════════════════════════════
+// MONAT
+// ══════════════════════════════════════════
+
+let aktuellerMonat = new Date();
+aktuellerMonat.setDate(1);
+
+function changeMonth(delta) {
+  aktuellerMonat.setMonth(aktuellerMonat.getMonth() + delta);
+  renderMonat();
+}
+
+function renderMonat() {
+  const jetzt = new Date();
+  const monat = aktuellerMonat;
+  const nextBtn = document.getElementById('month-next-btn');
+
+  const naechster = new Date(monat);
+  naechster.setMonth(naechster.getMonth() + 1);
+  nextBtn.disabled = naechster > jetzt;
+
+  document.getElementById('month-title').textContent =
+    monat.toLocaleDateString('de-DE', {month:'long', year:'numeric'});
+
+  const start = new Date(monat.getFullYear(), monat.getMonth(), 1);
+  const ende = new Date(monat.getFullYear(), monat.getMonth() + 1, 1);
+  const eintraege = ladeEintraege().filter(e =>
+    e.ende && new Date(e.start) >= start && new Date(e.start) < ende
+  );
+
+  const container = document.getElementById('monat-content');
+
+  if (eintraege.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">📅</div><div>Keine Eintraege in diesem Monat.</div></div>';
+    return;
+  }
+
+  const gesamt = eintraege.reduce((s,e) => s + (e.ende - e.start), 0);
+
+  // Gruppieren nach Tag
+  const gruppen = {};
+  eintraege.forEach(e => {
+    if (!gruppen[e.datum]) gruppen[e.datum] = [];
+    gruppen[e.datum].push(e);
+  });
+
+  const tage = Object.keys(gruppen).sort((a,b) => b.localeCompare(a));
+  const maxDauer = Math.max(...tage.map(d => gruppen[d].reduce((s,e) => s + (e.ende-e.start), 0)));
+
+  let html = `
+    <div class="month-total-card">
+      <div class="month-total-sublabel">Gesamtzeit</div>
+      <div id="month-total-value">${formatDauer(gesamt)}</div>
+    </div>
+    <div class="month-stats-row">
+      <div class="stat-card">
+        <div class="stat-value">${tage.length}</div>
+        <div class="stat-label">Aktive Tage</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">${formatDauer(maxDauer)}</div>
+        <div class="stat-label">Laengster Tag</div>
+      </div>
+    </div>
+  `;
+
+  tage.forEach(datum => {
+    const tagesDauer = gruppen[datum].reduce((s,e) => s + (e.ende-e.start), 0);
+    const anteil = gesamt > 0 ? tagesDauer / gesamt : 0;
+    const d = new Date(datum + 'T12:00:00');
+    const label = d.toLocaleDateString('de-DE', {weekday:'short', day:'numeric', month:'short'});
+    html += `<div class="month-day-row">
+      <div class="month-day-header">
+        <div class="month-day-name">${label}</div>
+        <div class="month-day-dur">${formatDauer(tagesDauer)}</div>
+      </div>
+      <div class="bar-bg"><div class="bar-fill" style="width:${Math.round(anteil*100)}%"></div></div>
+    </div>`;
+  });
+
+  container.innerHTML = html;
+}
+
+// ══════════════════════════════════════════
+// EINSTELLUNGEN
+// ══════════════════════════════════════════
+
+function updateSlider(typ) {
+  const val = parseInt(document.getElementById(typ + '-slider').value);
+  const label = document.getElementById(typ + '-val-label');
+  label.textContent = val === 0 ? 'Aus' : val + ' Sek.';
+  label.className = 'settings-row-value' + (val === 0 ? ' off' : '');
+  localStorage.setItem(typ + 'Sek', val);
+  aktualisiereStartView();
+}
+
+function ladeSlider() {
+  const einst = ladeEinstellungen();
+  document.getElementById('start-slider').value = einst.startSek;
+  document.getElementById('stopp-slider').value = einst.stoppSek;
+  updateSlider('start');
+  updateSlider('stopp');
+}
+
+function allesDaten() {
+  if (confirm('Wirklich alle Daten loeschen?')) {
+    localStorage.removeItem('zeiteintraege');
+    aktualisiereStartView();
+    renderVerlauf();
+    renderMonat();
+    zeigeToast('Alle Daten geloescht');
+  }
+}
+
+// ══════════════════════════════════════════
+// BENACHRICHTIGUNGEN
+// ══════════════════════════════════════════
+
+async function sendeNotification(title, body) {
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'default') {
+    await Notification.requestPermission();
+  }
+  if (Notification.permission === 'granted') {
+    new Notification(title, { body, icon: '/icon.png' });
+  }
+}
+
+// ══════════════════════════════════════════
+// NFC URL
+// ══════════════════════════════════════════
+
+function zeigeNfcUrl() {
+  const url = window.location.origin + window.location.pathname + '?toggle=1';
+  document.getElementById('nfc-url-display').textContent = url;
+}
+
+function pruefeToggleParam() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('toggle') === '1') {
+    history.replaceState({}, '', window.location.pathname);
+    setTimeout(() => toggleTimer(), 100);
+  }
+}
+
+// ══════════════════════════════════════════
+// TABS
+// ══════════════════════════════════════════
+
+function showTab(tab) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+
+  const pageMap = { start: 'page-start', verlauf: 'page-verlauf', monat: 'page-monat', einst: 'page-einst' };
+  document.getElementById(pageMap[tab]).classList.add('active');
+  document.querySelectorAll('.tab')[['start','verlauf','monat','einst'].indexOf(tab)].classList.add('active');
+
+  if (tab === 'verlauf') renderVerlauf();
+  if (tab === 'monat') renderMonat();
+  if (tab === 'einst') { ladeSlider(); zeigeNfcUrl(); }
+}
+
+// ══════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════
+
+let toastTimeout = null;
+function zeigeToast(text) {
+  const t = document.getElementById('toast');
+  t.textContent = text;
+  t.classList.add('show');
+  if (toastTimeout) clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+
+aktualisiereStartView();
+pruefeToggleParam();
+</script>
+
+</body>
+</html>
