@@ -41,6 +41,7 @@ html, body {
   height: 100dvh;
   max-width: 430px;
   margin: 0 auto;
+  overflow: hidden;
 }
 
 /* Tab Bar */
@@ -75,9 +76,10 @@ html, body {
 .page {
   display: none;
   flex: 1;
-  overflow-y: auto;
+  overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
-  padding: max(20px, env(safe-area-inset-top)) 16px 16px;
+  padding: max(20px, env(safe-area-inset-top)) 16px 32px;
+  min-height: 0;
 }
 .page.active { display: flex; flex-direction: column; }
 .page::-webkit-scrollbar { display: none; }
