@@ -82,7 +82,18 @@ html, body {
   min-height: 0;
 }
 .page.active { display: flex; flex-direction: column; }
+#page-einst { overflow-y: hidden; padding: 0; }
+#page-einst .einst-scroll { padding: max(20px, env(safe-area-inset-top)) 16px 32px; }
 .page::-webkit-scrollbar { display: none; }
+
+/* Einstellungen scroll wrapper */
+.einst-scroll {
+  flex: 1;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 20px;
+}
+.einst-scroll::-webkit-scrollbar { display: none; }
 
 h1 {
   font-size: 34px;
@@ -384,6 +395,7 @@ input[type=range]::-webkit-slider-thumb {
 
   <!-- EINSTELLUNGEN -->
   <div class="page" id="page-einst">
+    <div class="einst-scroll">
     <h1>Einstellungen</h1>
 
     <!-- Zeitversatz -->
@@ -459,6 +471,7 @@ input[type=range]::-webkit-slider-thumb {
       </div>
     </div>
     <div style="height:20px"></div>
+    </div><!-- end einst-scroll -->
   </div>
 
   <!-- TAB BAR -->
