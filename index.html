@@ -10,51 +10,49 @@
 <meta name="theme-color" content="#f2f2f7">
 <title>ZeitApp</title>
 <style>
-  :root {
-    --bg: #f2f2f7;
-    --surface: #ffffff;
-    --surface2: #e5e5ea;
-    --border: rgba(0,0,0,0.1);
-    --accent: #ff9500;
-    --accent2: #ff3b30;
-    --text: #000000;
-    --muted: rgba(0,0,0,0.4);
-    --green: #34c759;
-    --mono: 'Menlo', 'Courier New', monospace;
-    --sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
-  }
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
-- { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+:root {
+–bg: #f2f2f7;
+–surface: #ffffff;
+–border: rgba(0,0,0,0.12);
+–accent: #ff9500;
+–red: #ff3b30;
+–text: #000000;
+–muted: #8e8e93;
+–blue: #007aff;
+–font: -apple-system, BlinkMacSystemFont, ‘Helvetica Neue’, sans-serif;
+}
 
 html, body {
 background: var(–bg);
 color: var(–text);
-font-family: var(–sans);
+font-family: var(–font);
 height: 100%;
 overflow: hidden;
 position: fixed;
 width: 100%;
+-webkit-font-smoothing: antialiased;
 }
 
-/* ── Layout ── */
 #app {
 display: flex;
 flex-direction: column;
 height: 100dvh;
 max-width: 430px;
 margin: 0 auto;
-position: relative;
 }
 
 /* ── Tab Bar ── */
 #tabbar {
 display: flex;
-background: var(–surface);
-border-top: 1px solid var(–border);
-padding: 8px 0 0;
-padding-bottom: max(16px, env(safe-area-inset-bottom));
+background: rgba(242,242,247,0.9);
+border-top: 0.5px solid var(–border);
+padding-top: 8px;
+padding-bottom: max(20px, env(safe-area-inset-bottom));
 flex-shrink: 0;
-z-index: 10;
+backdrop-filter: blur(20px);
+-webkit-backdrop-filter: blur(20px);
 }
 .tab {
 flex: 1;
@@ -62,277 +60,201 @@ display: flex;
 flex-direction: column;
 align-items: center;
 gap: 3px;
-padding: 4px;
 cursor: pointer;
-transition: opacity 0.2s;
 border: none;
 background: none;
 color: var(–muted);
-font-family: var(–sans);
+font-family: var(–font);
 font-size: 10px;
-font-weight: 600;
-letter-spacing: 0.05em;
-text-transform: uppercase;
+font-weight: 500;
+letter-spacing: 0.01em;
 }
 .tab.active { color: var(–accent); }
-.tab svg { width: 22px; height: 22px; }
+.tab svg { width: 24px; height: 24px; }
 
 /* ── Pages ── */
 .page {
 display: none;
 flex: 1;
 overflow-y: auto;
-overflow-x: hidden;
 -webkit-overflow-scrolling: touch;
-padding: 0 16px 20px;
-padding-top: max(24px, env(safe-area-inset-top));
+padding: max(20px, env(safe-area-inset-top)) 16px 16px;
 }
 .page.active { display: flex; flex-direction: column; }
+.page::-webkit-scrollbar { display: none; }
 
-h1.page-title {
-font-size: 28px;
-font-weight: 800;
-letter-spacing: -0.02em;
-margin-bottom: 24px;
-color: var(–text);
+h1 {
+font-size: 34px;
+font-weight: 700;
+letter-spacing: -0.5px;
+margin-bottom: 20px;
 }
 
-/* ── Starten Page ── */
+/* ── Status Card ── */
 #status-card {
 background: var(–surface);
-border: 1px solid var(–border);
-border-radius: 20px;
-padding: 28px;
+border-radius: 16px;
+padding: 28px 20px;
 text-align: center;
-margin-bottom: 32px;
-transition: all 0.4s ease;
-position: relative;
-overflow: hidden;
+margin-bottom: 28px;
 }
-#status-card::before { display: none; }
-#status-card.running::before { display: none; }
-#status-icon {
-font-size: 48px;
-margin-bottom: 12px;
-display: block;
-transition: transform 0.3s;
-}
+#status-icon { font-size: 40px; display: block; margin-bottom: 10px; }
 #timer-display {
-font-family: var(–mono);
-font-size: 52px;
-font-weight: 300;
-letter-spacing: -0.02em;
-color: var(–text);
+font-size: 56px;
+font-weight: 200;
+letter-spacing: -2px;
 line-height: 1;
-margin-bottom: 8px;
+margin-bottom: 6px;
+font-variant-numeric: tabular-nums;
 }
 #status-label {
-font-size: 13px;
+font-size: 15px;
 color: var(–muted);
-letter-spacing: 0.08em;
-text-transform: uppercase;
-font-weight: 600;
+font-weight: 500;
 }
 #start-time-label {
-font-family: var(–mono);
-font-size: 12px;
+font-size: 13px;
 color: var(–muted);
-margin-top: 6px;
+margin-top: 4px;
 }
 
 /* ── Main Button ── */
 #btn-wrap {
 display: flex;
 justify-content: center;
-margin-bottom: 40px;
+margin-bottom: 36px;
 position: relative;
 }
 #main-btn {
-width: 180px;
-height: 180px;
+width: 170px;
+height: 170px;
 border-radius: 50%;
 border: none;
 cursor: pointer;
-font-family: var(–sans);
-font-size: 14px;
-font-weight: 700;
-letter-spacing: 0.15em;
-text-transform: uppercase;
+font-family: var(–font);
+font-size: 15px;
+font-weight: 600;
+letter-spacing: 0.5px;
 color: white;
 background: var(–accent);
-box-shadow: none;
-transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 display: flex;
 flex-direction: column;
 align-items: center;
 justify-content: center;
-gap: 10px;
-position: relative;
-overflow: hidden;
+gap: 8px;
+transition: transform 0.15s, opacity 0.15s;
 -webkit-appearance: none;
 }
-#main-btn::before { display: none; }
-#main-btn:active { transform: scale(0.93); }
-#main-btn.running {
-background: var(–accent2);
-box-shadow: none;
-}
-#main-btn svg { width: 44px; height: 44px; }
+#main-btn:active { transform: scale(0.94); opacity: 0.85; }
+#main-btn.running { background: var(–red); }
+#main-btn svg { width: 42px; height: 42px; }
+
 #pulse-ring {
 position: absolute;
-width: 180px;
-height: 180px;
+width: 170px;
+height: 170px;
 border-radius: 50%;
-border: 2px solid var(–accent);
+border: 2px solid var(–red);
 opacity: 0;
 pointer-events: none;
 }
-#pulse-ring.active {
-animation: pulse 2s ease-out infinite;
-}
+#pulse-ring.active { animation: pulse 2s ease-out infinite; }
 @keyframes pulse {
-0% { transform: scale(1); opacity: 0.6; }
-100% { transform: scale(1.4); opacity: 0; }
+0% { transform: scale(1); opacity: 0.5; }
+100% { transform: scale(1.35); opacity: 0; }
 }
+
 #btn-hint {
 position: absolute;
-bottom: -24px;
-font-size: 12px;
+bottom: -22px;
+font-size: 13px;
 color: var(–muted);
-font-weight: 600;
-letter-spacing: 0.05em;
-white-space: nowrap;
+font-weight: 400;
 }
 
-/* ── Offset hints ── */
+/* ── Offset Hints ── */
 #offset-hints {
-display: flex;
-flex-direction: column;
-gap: 6px;
-margin-bottom: 24px;
-min-height: 0;
-}
-.offset-hint {
-font-size: 12px;
-color: var(–muted);
 text-align: center;
-font-family: var(–mono);
+margin-bottom: 20px;
 }
+.offset-hint { font-size: 13px; color: var(–muted); margin-bottom: 3px; }
 
-/* ── Today summary ── */
+/* ── Today Summary ── */
 #today-summary {
 background: var(–surface);
-border: 1px solid var(–border);
-border-radius: 14px;
-padding: 16px 20px;
+border-radius: 16px;
+padding: 14px 18px;
 display: none;
+margin-top: auto;
 }
 #today-summary.visible { display: block; }
 #today-summary-label {
-font-size: 10px;
-letter-spacing: 0.1em;
-text-transform: uppercase;
+font-size: 12px;
 color: var(–muted);
-margin-bottom: 8px;
 font-weight: 600;
+text-transform: uppercase;
+letter-spacing: 0.5px;
+margin-bottom: 6px;
 }
-#today-summary-row {
-display: flex;
-justify-content: space-between;
-align-items: center;
-}
-#today-count { font-size: 13px; color: var(–muted); }
-#today-total {
-font-family: var(–mono);
-font-size: 20px;
-font-weight: 500;
-color: var(–accent);
-}
+#today-summary-row { display: flex; justify-content: space-between; align-items: center; }
+#today-count { font-size: 15px; color: var(–muted); }
+#today-total { font-size: 22px; font-weight: 600; color: var(–accent); font-variant-numeric: tabular-nums; }
 
 /* ── Toast ── */
 #toast {
 position: fixed;
-top: max(20px, env(safe-area-inset-top));
+top: max(16px, env(safe-area-inset-top));
 left: 50%;
 transform: translateX(-50%) translateY(-80px);
-background: var(–surface2);
-border: 1px solid var(–border);
+background: #1c1c1e;
+color: white;
 border-radius: 100px;
-padding: 10px 20px;
-font-size: 13px;
-font-weight: 600;
-white-space: nowrap;
+padding: 10px 18px;
+font-size: 14px;
+font-weight: 500;
 z-index: 100;
-transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-max-width: calc(100vw - 40px);
-white-space: normal;
+transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+max-width: calc(100vw - 32px);
 text-align: center;
+white-space: nowrap;
 }
 #toast.show { transform: translateX(-50%) translateY(0); }
 
-/* ── Verlauf Page ── */
+/* ── Verlauf ── */
 .section-header {
-font-size: 11px;
-letter-spacing: 0.1em;
-text-transform: uppercase;
-color: var(–muted);
+font-size: 13px;
 font-weight: 600;
-padding: 20px 0 8px;
+color: var(–muted);
+text-transform: uppercase;
+letter-spacing: 0.5px;
+padding: 16px 4px 6px;
 }
 .entry-row {
 display: flex;
 align-items: center;
-padding: 12px 16px;
 background: var(–surface);
-border: 1px solid var(–border);
 border-radius: 12px;
+padding: 12px 14px;
 margin-bottom: 6px;
-gap: 12px;
+gap: 10px;
 }
-.entry-times {
-flex: 1;
-font-family: var(–mono);
-font-size: 14px;
-color: var(–text);
-}
-.entry-arrow { color: var(–muted); font-size: 12px; margin: 0 4px; }
-.entry-running { color: var(–accent2); }
-.entry-duration {
-font-family: var(–mono);
-font-size: 14px;
-font-weight: 500;
-color: var(–text);
-}
-.entry-delete {
-background: none;
-border: none;
-color: var(–muted);
-cursor: pointer;
-padding: 4px;
-font-size: 16px;
-line-height: 1;
-transition: color 0.2s;
-}
-.entry-delete:active { color: var(–accent2); }
+.entry-times { flex: 1; font-size: 15px; color: var(–text); font-variant-numeric: tabular-nums; }
+.entry-arrow { color: var(–muted); margin: 0 4px; }
+.entry-running { color: var(–accent); }
+.entry-duration { font-size: 15px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.entry-delete { background: none; border: none; color: var(–muted); font-size: 18px; cursor: pointer; padding: 2px 4px; line-height: 1; }
 
 .day-total {
-background: rgba(124,106,255,0.08);
-border: 1px solid rgba(124,106,255,0.15);
+background: rgba(255,149,0,0.08);
 border-radius: 12px;
-padding: 12px 16px;
+padding: 12px 14px;
 display: flex;
 justify-content: space-between;
 align-items: center;
 margin-bottom: 6px;
 }
-.day-total-label { font-size: 12px; color: var(–muted); font-weight: 600; }
-.day-total-value {
-font-family: var(–mono);
-font-size: 18px;
-font-weight: 500;
-color: var(–accent);
-}
+.day-total-label { font-size: 13px; color: var(–muted); font-weight: 500; }
+.day-total-value { font-size: 20px; font-weight: 600; color: var(–accent); font-variant-numeric: tabular-nums; }
 
 .empty-state {
 flex: 1;
@@ -340,260 +262,172 @@ display: flex;
 flex-direction: column;
 align-items: center;
 justify-content: center;
-gap: 12px;
+gap: 10px;
 color: var(–muted);
-font-size: 14px;
-padding: 40px;
+font-size: 15px;
 text-align: center;
+padding: 40px;
 }
-.empty-state .icon { font-size: 48px; opacity: 0.4; }
+.empty-icon { font-size: 44px; opacity: 0.5; }
 
-/* ── Monat Page ── */
+/* ── Monat ── */
 .month-nav {
 display: flex;
 align-items: center;
 justify-content: space-between;
-margin-bottom: 20px;
+margin-bottom: 16px;
 }
 .month-nav-btn {
-width: 40px; height: 40px;
+width: 36px; height: 36px;
 border-radius: 50%;
 background: var(–surface);
-border: 1px solid var(–border);
-color: var(–text);
-font-size: 18px;
+border: none;
+color: var(–accent);
+font-size: 20px;
+font-weight: 600;
 cursor: pointer;
 display: flex;
 align-items: center;
 justify-content: center;
-transition: all 0.2s;
--webkit-appearance: none;
+transition: opacity 0.15s;
 }
-.month-nav-btn:active { transform: scale(0.9); background: var(–surface2); }
 .month-nav-btn:disabled { opacity: 0.3; }
-#month-title {
-font-size: 18px;
-font-weight: 700;
-letter-spacing: -0.01em;
-}
+#month-title { font-size: 17px; font-weight: 600; }
 
 .month-total-card {
 background: var(–surface);
-border: 1px solid var(–border);
-border-radius: 20px;
-padding: 28px;
+border-radius: 16px;
+padding: 24px 20px;
 text-align: center;
-margin-bottom: 16px;
-position: relative;
-overflow: hidden;
+margin-bottom: 12px;
 }
-.month-total-card::before { display: none; }
 .month-total-sublabel {
-font-size: 11px;
-letter-spacing: 0.1em;
-text-transform: uppercase;
+font-size: 12px;
 color: var(–muted);
 font-weight: 600;
-margin-bottom: 8px;
-position: relative;
-}
-#month-total-value {
-font-family: var(–mono);
-font-size: 44px;
-font-weight: 300;
-color: var(–accent);
-position: relative;
-line-height: 1;
-}
-
-.month-stats-row {
-display: grid;
-grid-template-columns: 1fr 1fr;
-gap: 12px;
-margin-bottom: 20px;
-}
-.stat-card {
-background: var(–surface);
-border: 1px solid var(–border);
-border-radius: 16px;
-padding: 16px;
-text-align: center;
-}
-.stat-value {
-font-family: var(–mono);
-font-size: 22px;
-font-weight: 500;
-margin-bottom: 4px;
-}
-.stat-label { font-size: 11px; color: var(–muted); font-weight: 600; letter-spacing: 0.05em; }
-
-.month-day-row {
-background: var(–surface);
-border: 1px solid var(–border);
-border-radius: 12px;
-padding: 12px 16px;
+text-transform: uppercase;
+letter-spacing: 0.5px;
 margin-bottom: 6px;
 }
-.month-day-header {
-display: flex;
-justify-content: space-between;
-margin-bottom: 8px;
-}
-.month-day-name { font-size: 13px; font-weight: 600; }
-.month-day-dur {
-font-family: var(–mono);
-font-size: 13px;
-font-weight: 500;
+#month-total-value {
+font-size: 44px;
+font-weight: 200;
 color: var(–accent);
-}
-.bar-bg {
-height: 4px;
-background: rgba(255,255,255,0.06);
-border-radius: 2px;
-overflow: hidden;
-}
-.bar-fill {
-height: 100%;
-background: var(–accent);
-border-radius: 2px;
-transition: width 0.6s ease;
+letter-spacing: -1px;
+font-variant-numeric: tabular-nums;
 }
 
-/* ── Einstellungen Page ── */
-.settings-section {
-background: var(–surface);
-border: 1px solid var(–border);
-border-radius: 16px;
-overflow: hidden;
-margin-bottom: 16px;
-}
-.settings-section-title {
-font-size: 11px;
-letter-spacing: 0.1em;
-text-transform: uppercase;
-color: var(–muted);
+.month-stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+.stat-card { background: var(–surface); border-radius: 14px; padding: 16px; text-align: center; }
+.stat-value { font-size: 22px; font-weight: 600; margin-bottom: 2px; font-variant-numeric: tabular-nums; }
+.stat-label { font-size: 12px; color: var(–muted); font-weight: 500; }
+
+.month-day-row { background: var(–surface); border-radius: 12px; padding: 12px 14px; margin-bottom: 6px; }
+.month-day-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+.month-day-name { font-size: 14px; font-weight: 500; }
+.month-day-dur { font-size: 14px; font-weight: 600; color: var(–accent); font-variant-numeric: tabular-nums; }
+.bar-bg { height: 3px; background: #e5e5ea; border-radius: 2px; }
+.bar-fill { height: 100%; background: var(–accent); border-radius: 2px; transition: width 0.5s ease; }
+
+/* ── Einstellungen ── */
+.settings-group { background: var(–surface); border-radius: 16px; overflow: hidden; margin-bottom: 16px; }
+.settings-group-title {
+font-size: 13px;
 font-weight: 600;
-padding: 12px 16px 0;
+color: var(–muted);
+text-transform: uppercase;
+letter-spacing: 0.5px;
+padding: 14px 16px 4px;
 }
-.settings-row {
-padding: 16px;
-border-bottom: 1px solid var(–border);
-}
+.settings-row { padding: 12px 16px; border-bottom: 0.5px solid var(–border); }
 .settings-row:last-child { border-bottom: none; }
-.settings-row-header {
-display: flex;
-justify-content: space-between;
-align-items: center;
-margin-bottom: 10px;
-}
-.settings-row-label { font-size: 15px; font-weight: 600; }
-.settings-row-value {
-font-family: var(–mono);
-font-size: 14px;
-font-weight: 500;
-color: var(–accent);
-}
-.settings-row-value.off { color: var(–muted); }
+.settings-row-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.settings-row-label { font-size: 16px; font-weight: 400; }
+.settings-val { font-size: 16px; color: var(–accent); font-variant-numeric: tabular-nums; }
+.settings-val.off { color: var(–muted); }
+.settings-footer { font-size: 13px; color: var(–muted); padding: 6px 16px 12px; line-height: 1.5; }
 
 input[type=range] {
 width: 100%;
 -webkit-appearance: none;
 height: 4px;
 border-radius: 2px;
-background: var(–surface2);
+background: #e5e5ea;
 outline: none;
-cursor: pointer;
 }
 input[type=range]::-webkit-slider-thumb {
 -webkit-appearance: none;
-width: 22px; height: 22px;
+width: 24px; height: 24px;
 border-radius: 50%;
-background: var(–accent);
-box-shadow: 0 2px 8px rgba(124,106,255,0.4);
+background: white;
+box-shadow: 0 1px 4px rgba(0,0,0,0.3);
 cursor: pointer;
 }
-.settings-footer-text {
-font-size: 12px;
-color: var(–muted);
-padding: 8px 16px 16px;
-line-height: 1.5;
-}
 
-.nfc-info {
-background: rgba(255,149,0,0.08);
-border: 1px solid rgba(255,149,0,0.2);
+.nfc-box {
+background: var(–surface);
 border-radius: 16px;
-padding: 20px;
+padding: 16px;
 margin-bottom: 16px;
 }
-.nfc-info-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
-.nfc-info-text { font-size: 13px; color: var(–muted); line-height: 1.6; }
-.nfc-info-url {
-font-family: var(–mono);
+.nfc-box-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+.nfc-box-text { font-size: 14px; color: var(–muted); line-height: 1.5; margin-bottom: 10px; }
+.nfc-url {
 font-size: 12px;
-color: var(–accent);
-background: rgba(255,149,0,0.1);
-padding: 8px 12px;
+color: var(–blue);
+background: #f2f2f7;
+padding: 8px 10px;
 border-radius: 8px;
-margin-top: 10px;
 word-break: break-all;
+line-height: 1.4;
 }
 
-/* ── Scrollbar ── */
-.page::-webkit-scrollbar { display: none; }
+.danger-btn { background: none; border: none; color: var(–red); font-family: var(–font); font-size: 16px; cursor: pointer; width: 100%; text-align: left; padding: 0; }
 </style>
 
 </head>
 <body>
 <div id="app">
 
-  <!-- ══ STARTEN ══ -->
+  <!-- STARTEN -->
 
   <div class="page active" id="page-start">
-    <h1 class="page-title">Zeiterfassung</h1>
-
-```
-<div id="status-card">
-  <span id="status-icon">🕐</span>
-  <div id="timer-display">00:00</div>
-  <div id="status-label">Bereit</div>
-  <div id="start-time-label"></div>
-</div>
-
-<div id="btn-wrap">
-  <div id="pulse-ring"></div>
-  <button id="main-btn" onclick="toggleTimer()">
-    <svg id="btn-icon" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M8 5v14l11-7z"/>
-    </svg>
-    <span id="btn-label">STARTEN</span>
-  </button>
-  <span id="btn-hint">Tippen zum Starten</span>
-</div>
-
-<div id="offset-hints"></div>
-<div id="today-summary">
-  <div id="today-summary-label">Heute</div>
-  <div id="today-summary-row">
-    <span id="today-count"></span>
-    <span id="today-total"></span>
-  </div>
-</div>
-```
-
+    <h1>Zeiterfassung</h1>
+    <div id="status-card">
+      <span id="status-icon">🕐</span>
+      <div id="timer-display">00:00</div>
+      <div id="status-label">Bereit</div>
+      <div id="start-time-label"></div>
+    </div>
+    <div id="btn-wrap">
+      <div id="pulse-ring"></div>
+      <button id="main-btn" onclick="toggleTimer()">
+        <svg id="btn-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        <span id="btn-label">Starten</span>
+      </button>
+      <span id="btn-hint">Tippen zum Starten</span>
+    </div>
+    <div id="offset-hints"></div>
+    <div id="today-summary">
+      <div id="today-summary-label">Heute</div>
+      <div id="today-summary-row">
+        <span id="today-count"></span>
+        <span id="today-total"></span>
+      </div>
+    </div>
   </div>
 
-  <!-- ══ VERLAUF ══ -->
+  <!-- VERLAUF -->
 
   <div class="page" id="page-verlauf">
-    <h1 class="page-title">Verlauf</h1>
+    <h1>Verlauf</h1>
     <div id="verlauf-content"></div>
   </div>
 
-  <!-- ══ MONAT ══ -->
+  <!-- MONAT -->
 
   <div class="page" id="page-monat">
-    <h1 class="page-title">Monat</h1>
+    <h1>Monat</h1>
     <div class="month-nav">
       <button class="month-nav-btn" onclick="changeMonth(-1)">‹</button>
       <span id="month-title"></span>
@@ -602,61 +436,54 @@ word-break: break-all;
     <div id="monat-content"></div>
   </div>
 
-  <!-- ══ EINSTELLUNGEN ══ -->
+  <!-- EINSTELLUNGEN -->
 
   <div class="page" id="page-einst">
-    <h1 class="page-title">Einstellungen</h1>
+    <h1>Einstellungen</h1>
 
 ```
-<div class="settings-section">
-  <div class="settings-section-title">Zeitversatz beim Starten</div>
+<div class="settings-group">
+  <div class="settings-group-title">Zeitversatz beim Starten</div>
   <div class="settings-row">
-    <div class="settings-row-header">
+    <div class="settings-row-top">
       <span class="settings-row-label">Start-Verzoegerung</span>
-      <span class="settings-row-value" id="start-val-label">Aus</span>
+      <span class="settings-val off" id="start-val-label">Aus</span>
     </div>
-    <input type="range" id="start-slider" min="0" max="300" step="5" value="0"
-           oninput="updateSlider('start')">
-    <div class="settings-footer-text">Zeit beginnt X Sekunden nach dem Tippen.</div>
+    <input type="range" id="start-slider" min="0" max="300" step="5" value="0" oninput="updateSlider('start')">
   </div>
+  <div class="settings-footer">Zeit beginnt X Sekunden nach dem Tippen.</div>
 </div>
 
-<div class="settings-section">
-  <div class="settings-section-title">Zeitversatz beim Stoppen</div>
+<div class="settings-group">
+  <div class="settings-group-title">Zeitversatz beim Stoppen</div>
   <div class="settings-row">
-    <div class="settings-row-header">
+    <div class="settings-row-top">
       <span class="settings-row-label">Stopp-Vorlauf</span>
-      <span class="settings-row-value" id="stopp-val-label">Aus</span>
+      <span class="settings-val off" id="stopp-val-label">Aus</span>
     </div>
-    <input type="range" id="stopp-slider" min="0" max="300" step="5" value="0"
-           oninput="updateSlider('stopp')">
-    <div class="settings-footer-text">Zeit endet X Sekunden vor dem Tippen.</div>
+    <input type="range" id="stopp-slider" min="0" max="300" step="5" value="0" oninput="updateSlider('stopp')">
   </div>
+  <div class="settings-footer">Zeit endet X Sekunden vor dem Tippen.</div>
 </div>
 
-<div class="nfc-info">
-  <div class="nfc-info-title">NFC-Kurzbefehl einrichten</div>
-  <div class="nfc-info-text">
-    Erstelle in der Kurzbefehle-App einen Kurzbefehl mit der Aktion "URL oeffnen" und der folgenden URL. Verknuepfe ihn mit einem NFC-Tag als Automation.
-  </div>
-  <div class="nfc-info-url" id="nfc-url-display"></div>
+<div class="nfc-box">
+  <div class="nfc-box-title">NFC-Kurzbefehl</div>
+  <div class="nfc-box-text">Erstelle in der Kurzbefehle-App eine Automation mit einem NFC-Tag und der Aktion "URL oeffnen":</div>
+  <div class="nfc-url" id="nfc-url-display"></div>
 </div>
 
-<div class="settings-section">
-  <div class="settings-section-title">Daten</div>
+<div class="settings-group">
+  <div class="settings-group-title">Daten</div>
   <div class="settings-row">
-    <button onclick="allesDaten()" style="background:none;border:none;color:var(--muted);font-family:var(--sans);font-size:14px;cursor:pointer;width:100%;text-align:left;padding:0;">
-      Alle Daten loeschen...
-    </button>
+    <button class="danger-btn" onclick="allesDaten()">Alle Daten loeschen...</button>
   </div>
 </div>
-
 <div style="height:20px"></div>
 ```
 
   </div>
 
-  <!-- ══ TABBAR ══ -->
+  <!-- TAB BAR -->
 
   <div id="tabbar">
     <button class="tab active" onclick="showTab('start')">
@@ -681,63 +508,42 @@ word-break: break-all;
 <div id="toast"></div>
 
 <script>
-// ══════════════════════════════════════════
-// DATEN
-// ══════════════════════════════════════════
-
 function ladeEintraege() {
   try { return JSON.parse(localStorage.getItem('zeiteintraege') || '[]'); } catch { return []; }
 }
-function speichereEintraege(e) {
-  localStorage.setItem('zeiteintraege', JSON.stringify(e));
-}
+function speichereEintraege(e) { localStorage.setItem('zeiteintraege', JSON.stringify(e)); }
 function ladeEinstellungen() {
   return {
     startSek: parseInt(localStorage.getItem('startSek') || '0'),
     stoppSek: parseInt(localStorage.getItem('stoppSek') || '0'),
   };
 }
-
-function aktiverEintrag() {
-  return ladeEintraege().find(e => !e.ende) || null;
-}
-
-function tagesgesamtHeute() {
-  const heute = tagesKey(new Date());
-  return ladeEintraege()
-    .filter(e => e.datum === heute && e.ende)
-    .reduce((s, e) => s + (e.ende - e.start), 0);
-}
-
+function aktiverEintrag() { return ladeEintraege().find(e => !e.ende) || null; }
 function tagesKey(d) {
   return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
 }
-
+function tagesgesamtHeute() {
+  const h = tagesKey(new Date());
+  return ladeEintraege().filter(e => e.datum === h && e.ende).reduce((s,e) => s + (e.ende - e.start), 0);
+}
 function formatDauer(ms) {
   const s = Math.floor(Math.max(0, ms) / 1000);
   const h = Math.floor(s / 3600);
   const m = Math.floor((s % 3600) / 60);
   const sec = s % 60;
-  if (h > 0) return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')} Std`;
-  return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')} Min`;
+  if (h > 0) return String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0') + ' Std';
+  return String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0') + ' Min';
 }
-
 function formatZeit(ts) {
   const d = new Date(ts);
   return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
 }
 
-// ══════════════════════════════════════════
-// TOGGLE
-// ══════════════════════════════════════════
-
 function toggleTimer() {
   const einst = ladeEinstellungen();
   const jetzt = Date.now();
   const aktiv = aktiverEintrag();
-
   if (aktiv) {
-    // STOPPEN
     const eintraege = ladeEintraege();
     const idx = eintraege.findIndex(e => !e.ende);
     const ende = jetzt - (einst.stoppSek * 1000);
@@ -745,358 +551,207 @@ function toggleTimer() {
     speichereEintraege(eintraege);
     stopTimer();
     const dauer = ende - eintraege[idx].start;
-    const tagesges = tagesgesamtHeute();
-    const msg = `Gestoppt: ${formatDauer(dauer)}  |  Heute: ${formatDauer(tagesges)}`;
-    zeigeToast(msg);
-    sendeNotification('Aufzeichnung gestoppt', `Dauer: ${formatDauer(dauer)} | Heute: ${formatDauer(tagesges)}`);
+    zeigeToast('Gestoppt: ' + formatDauer(dauer) + '  |  Heute: ' + formatDauer(tagesgesamtHeute()));
+    sendeNotification('Aufzeichnung gestoppt', 'Dauer: ' + formatDauer(dauer) + ' | Heute: ' + formatDauer(tagesgesamtHeute()));
   } else {
-    // STARTEN
     const start = jetzt + (einst.startSek * 1000);
-    const eintrag = {
-      id: jetzt,
-      start: start,
-      ende: null,
-      datum: tagesKey(new Date(start))
-    };
+    const eintrag = { id: jetzt, start: start, ende: null, datum: tagesKey(new Date(start)) };
     const eintraege = ladeEintraege();
     eintraege.push(eintrag);
     speichereEintraege(eintraege);
     startTimer();
-    const msg = einst.startSek > 0
-      ? `Gestartet (${einst.startSek} Sek. verzoegert)`
-      : 'Aufzeichnung gestartet';
-    zeigeToast(msg);
-    sendeNotification('Aufzeichnung gestartet', `Beginn: ${formatZeit(start)}`);
+    zeigeToast(einst.startSek > 0 ? 'Gestartet (' + einst.startSek + ' Sek. verzoegert)' : 'Aufzeichnung gestartet');
+    sendeNotification('Aufzeichnung gestartet', 'Beginn: ' + formatZeit(start));
   }
   aktualisiereStartView();
 }
 
-// ══════════════════════════════════════════
-// TIMER ANZEIGE
-// ══════════════════════════════════════════
-
 let timerInterval = null;
-
 function startTimer() {
   stopTimer();
   timerInterval = setInterval(aktualisiereTimerAnzeige, 1000);
 }
-
-function stopTimer() {
-  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
-}
-
+function stopTimer() { if (timerInterval) { clearInterval(timerInterval); timerInterval = null; } }
 function aktualisiereTimerAnzeige() {
   const aktiv = aktiverEintrag();
   if (!aktiv) { stopTimer(); aktualisiereStartView(); return; }
-  const vergangen = Date.now() - aktiv.start;
-  const s = Math.floor(Math.max(0, vergangen) / 1000);
+  const s = Math.floor(Math.max(0, Date.now() - aktiv.start) / 1000);
   const h = Math.floor(s / 3600);
   const m = Math.floor((s % 3600) / 60);
   const sec = s % 60;
   document.getElementById('timer-display').textContent = h > 0
-    ? `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`
-    : `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+    ? String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0')
+    : String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
 }
 
 function aktualisiereStartView() {
   const aktiv = aktiverEintrag();
-  const card = document.getElementById('status-card');
   const btn = document.getElementById('main-btn');
-  const icon = document.getElementById('btn-icon');
   const pulse = document.getElementById('pulse-ring');
   const einst = ladeEinstellungen();
-
   if (aktiv) {
-    card.classList.add('running');
+    document.getElementById('status-card').style.background = '#fff5e6';
     btn.classList.add('running');
     pulse.classList.add('active');
     document.getElementById('status-icon').textContent = '⏱';
     document.getElementById('status-label').textContent = 'Laeuft';
     document.getElementById('start-time-label').textContent = 'Gestartet: ' + formatZeit(aktiv.start);
-    icon.innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
-    document.getElementById('btn-label').textContent = 'STOPPEN';
+    document.getElementById('btn-icon').innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
+    document.getElementById('btn-label').textContent = 'Stoppen';
     document.getElementById('btn-hint').textContent = 'Tippen zum Stoppen';
     startTimer();
     aktualisiereTimerAnzeige();
   } else {
-    card.classList.remove('running');
+    document.getElementById('status-card').style.background = '';
     btn.classList.remove('running');
     pulse.classList.remove('active');
     document.getElementById('status-icon').textContent = '🕐';
     document.getElementById('timer-display').textContent = '00:00';
     document.getElementById('status-label').textContent = 'Bereit';
     document.getElementById('start-time-label').textContent = '';
-    icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
-    document.getElementById('btn-label').textContent = 'STARTEN';
+    document.getElementById('btn-icon').innerHTML = '<path d="M8 5v14l11-7z"/>';
+    document.getElementById('btn-label').textContent = 'Starten';
     document.getElementById('btn-hint').textContent = 'Tippen zum Starten';
     stopTimer();
   }
-
-  // Offset hints
   const hints = document.getElementById('offset-hints');
   hints.innerHTML = '';
-  if (einst.startSek > 0) hints.innerHTML += `<div class="offset-hint">Start verzoegert um ${einst.startSek} Sek.</div>`;
-  if (einst.stoppSek > 0) hints.innerHTML += `<div class="offset-hint">Stopp vorgezogen um ${einst.stoppSek} Sek.</div>`;
-
-  // Today summary
-  const heute = tagesKey(new Date());
-  const heuteEintraege = ladeEintraege().filter(e => e.datum === heute && e.ende);
+  if (einst.startSek > 0) hints.innerHTML += '<div class="offset-hint">Start verzoegert um ' + einst.startSek + ' Sek.</div>';
+  if (einst.stoppSek > 0) hints.innerHTML += '<div class="offset-hint">Stopp vorgezogen um ' + einst.stoppSek + ' Sek.</div>';
+  const heuteEintraege = ladeEintraege().filter(e => e.datum === tagesKey(new Date()) && e.ende);
   const summary = document.getElementById('today-summary');
   if (heuteEintraege.length > 0) {
     summary.classList.add('visible');
-    document.getElementById('today-count').textContent = `${heuteEintraege.length} Eintraege`;
+    document.getElementById('today-count').textContent = heuteEintraege.length + ' Eintraege';
     document.getElementById('today-total').textContent = formatDauer(tagesgesamtHeute());
   } else {
     summary.classList.remove('visible');
   }
 }
 
-// ══════════════════════════════════════════
-// VERLAUF
-// ══════════════════════════════════════════
-
 function renderVerlauf() {
   const container = document.getElementById('verlauf-content');
   const eintraege = ladeEintraege().slice().reverse();
-
   if (eintraege.length === 0) {
-    container.innerHTML = '<div class="empty-state"><div class="icon">🕐</div><div>Noch keine Eintraege.<br>Starte eine Aufzeichnung!</div></div>';
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">🕐</div><div>Noch keine Eintraege</div></div>';
     return;
   }
-
-  // Gruppieren nach Datum
   const gruppen = {};
-  eintraege.forEach(e => {
-    if (!gruppen[e.datum]) gruppen[e.datum] = [];
-    gruppen[e.datum].push(e);
-  });
-
+  eintraege.forEach(e => { if (!gruppen[e.datum]) gruppen[e.datum] = []; gruppen[e.datum].push(e); });
   let html = '';
   Object.keys(gruppen).sort((a,b) => b.localeCompare(a)).forEach(datum => {
     const gruppe = gruppen[datum];
     const d = new Date(datum + 'T12:00:00');
-    const label = istHeute(datum) ? 'Heute'
-      : istGestern(datum) ? 'Gestern'
-      : d.toLocaleDateString('de-DE', {weekday:'long', day:'numeric', month:'long'});
-
-    html += `<div class="section-header">${label}</div>`;
-
+    const heute = tagesKey(new Date()); const gestern = new Date(); gestern.setDate(gestern.getDate()-1);
+    const label = datum === heute ? 'Heute' : datum === tagesKey(gestern) ? 'Gestern' : d.toLocaleDateString('de-DE', {weekday:'long', day:'numeric', month:'long'});
+    html += '<div class="section-header">' + label + '</div>';
     gruppe.forEach(e => {
       const dauer = e.ende ? formatDauer(e.ende - e.start) : 'laeuft...';
-      const endeStr = e.ende ? formatZeit(e.ende) : `<span class="entry-running">laeuft</span>`;
-      html += `<div class="entry-row">
-        <div class="entry-times">${formatZeit(e.start)}<span class="entry-arrow">›</span>${endeStr}</div>
-        <div class="entry-duration">${dauer}</div>
-        <button class="entry-delete" onclick="loescheEintrag(${e.id})">✕</button>
-      </div>`;
+      const endeStr = e.ende ? formatZeit(e.ende) : '<span class="entry-running">laeuft</span>';
+      html += '<div class="entry-row"><div class="entry-times">' + formatZeit(e.start) + '<span class="entry-arrow"> › </span>' + endeStr + '</div><div class="entry-duration">' + dauer + '</div><button class="entry-delete" onclick="loescheEintrag(' + e.id + ')">×</button></div>';
     });
-
-    const abgeschlossen = gruppe.filter(e => e.ende);
-    if (abgeschlossen.length > 0) {
-      const gesamt = abgeschlossen.reduce((s,e) => s + (e.ende - e.start), 0);
-      html += `<div class="day-total">
-        <div class="day-total-label">Tagesgesamt · ${abgeschlossen.length} Eintraege</div>
-        <div class="day-total-value">${formatDauer(gesamt)}</div>
-      </div>`;
+    const abg = gruppe.filter(e => e.ende);
+    if (abg.length > 0) {
+      const ges = abg.reduce((s,e) => s + (e.ende - e.start), 0);
+      html += '<div class="day-total"><div class="day-total-label">Tagesgesamt · ' + abg.length + ' Eintraege</div><div class="day-total-value">' + formatDauer(ges) + '</div></div>';
     }
   });
-
   container.innerHTML = html;
 }
 
 function loescheEintrag(id) {
   if (!confirm('Eintrag loeschen?')) return;
-  const eintraege = ladeEintraege().filter(e => e.id !== id);
-  speichereEintraege(eintraege);
-  renderVerlauf();
-  aktualisiereStartView();
+  speichereEintraege(ladeEintraege().filter(e => e.id !== id));
+  renderVerlauf(); aktualisiereStartView();
 }
 
-function istHeute(datum) { return datum === tagesKey(new Date()); }
-function istGestern(datum) {
-  const g = new Date(); g.setDate(g.getDate()-1);
-  return datum === tagesKey(g);
-}
-
-// ══════════════════════════════════════════
-// MONAT
-// ══════════════════════════════════════════
-
-let aktuellerMonat = new Date();
-aktuellerMonat.setDate(1);
-
-function changeMonth(delta) {
-  aktuellerMonat.setMonth(aktuellerMonat.getMonth() + delta);
-  renderMonat();
-}
-
+let aktuellerMonat = new Date(); aktuellerMonat.setDate(1);
+function changeMonth(d) { aktuellerMonat.setMonth(aktuellerMonat.getMonth() + d); renderMonat(); }
 function renderMonat() {
   const jetzt = new Date();
-  const monat = aktuellerMonat;
-  const nextBtn = document.getElementById('month-next-btn');
-
-  const naechster = new Date(monat);
-  naechster.setMonth(naechster.getMonth() + 1);
-  nextBtn.disabled = naechster > jetzt;
-
-  document.getElementById('month-title').textContent =
-    monat.toLocaleDateString('de-DE', {month:'long', year:'numeric'});
-
-  const start = new Date(monat.getFullYear(), monat.getMonth(), 1);
-  const ende = new Date(monat.getFullYear(), monat.getMonth() + 1, 1);
-  const eintraege = ladeEintraege().filter(e =>
-    e.ende && new Date(e.start) >= start && new Date(e.start) < ende
-  );
-
+  const naechster = new Date(aktuellerMonat); naechster.setMonth(naechster.getMonth() + 1);
+  document.getElementById('month-next-btn').disabled = naechster > jetzt;
+  document.getElementById('month-title').textContent = aktuellerMonat.toLocaleDateString('de-DE', {month:'long', year:'numeric'});
+  const start = new Date(aktuellerMonat.getFullYear(), aktuellerMonat.getMonth(), 1);
+  const ende = new Date(aktuellerMonat.getFullYear(), aktuellerMonat.getMonth() + 1, 1);
+  const eintraege = ladeEintraege().filter(e => e.ende && new Date(e.start) >= start && new Date(e.start) < ende);
   const container = document.getElementById('monat-content');
-
-  if (eintraege.length === 0) {
-    container.innerHTML = '<div class="empty-state"><div class="icon">📅</div><div>Keine Eintraege in diesem Monat.</div></div>';
-    return;
-  }
-
+  if (eintraege.length === 0) { container.innerHTML = '<div class="empty-state"><div class="empty-icon">📅</div><div>Keine Eintraege in diesem Monat</div></div>'; return; }
   const gesamt = eintraege.reduce((s,e) => s + (e.ende - e.start), 0);
-
-  // Gruppieren nach Tag
   const gruppen = {};
-  eintraege.forEach(e => {
-    if (!gruppen[e.datum]) gruppen[e.datum] = [];
-    gruppen[e.datum].push(e);
-  });
-
+  eintraege.forEach(e => { if (!gruppen[e.datum]) gruppen[e.datum] = []; gruppen[e.datum].push(e); });
   const tage = Object.keys(gruppen).sort((a,b) => b.localeCompare(a));
-  const maxDauer = Math.max(...tage.map(d => gruppen[d].reduce((s,e) => s + (e.ende-e.start), 0)));
-
-  let html = `
-    <div class="month-total-card">
-      <div class="month-total-sublabel">Gesamtzeit</div>
-      <div id="month-total-value">${formatDauer(gesamt)}</div>
-    </div>
-    <div class="month-stats-row">
-      <div class="stat-card">
-        <div class="stat-value">${tage.length}</div>
-        <div class="stat-label">Aktive Tage</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-value">${formatDauer(maxDauer)}</div>
-        <div class="stat-label">Laengster Tag</div>
-      </div>
-    </div>
-  `;
-
+  const maxD = Math.max(...tage.map(d => gruppen[d].reduce((s,e) => s + (e.ende-e.start), 0)));
+  let html = '<div class="month-total-card"><div class="month-total-sublabel">Gesamtzeit</div><div id="month-total-value">' + formatDauer(gesamt) + '</div></div>';
+  html += '<div class="month-stats-row"><div class="stat-card"><div class="stat-value">' + tage.length + '</div><div class="stat-label">Aktive Tage</div></div><div class="stat-card"><div class="stat-value">' + formatDauer(maxD) + '</div><div class="stat-label">Laengster Tag</div></div></div>';
   tage.forEach(datum => {
-    const tagesDauer = gruppen[datum].reduce((s,e) => s + (e.ende-e.start), 0);
-    const anteil = gesamt > 0 ? tagesDauer / gesamt : 0;
+    const td = gruppen[datum].reduce((s,e) => s + (e.ende-e.start), 0);
+    const anteil = gesamt > 0 ? td / gesamt : 0;
     const d = new Date(datum + 'T12:00:00');
-    const label = d.toLocaleDateString('de-DE', {weekday:'short', day:'numeric', month:'short'});
-    html += `<div class="month-day-row">
-      <div class="month-day-header">
-        <div class="month-day-name">${label}</div>
-        <div class="month-day-dur">${formatDauer(tagesDauer)}</div>
-      </div>
-      <div class="bar-bg"><div class="bar-fill" style="width:${Math.round(anteil*100)}%"></div></div>
-    </div>`;
+    html += '<div class="month-day-row"><div class="month-day-header"><div class="month-day-name">' + d.toLocaleDateString('de-DE', {weekday:'short', day:'numeric', month:'short'}) + '</div><div class="month-day-dur">' + formatDauer(td) + '</div></div><div class="bar-bg"><div class="bar-fill" style="width:' + Math.round(anteil*100) + '%"></div></div></div>';
   });
-
   container.innerHTML = html;
 }
-
-// ══════════════════════════════════════════
-// EINSTELLUNGEN
-// ══════════════════════════════════════════
 
 function updateSlider(typ) {
   const val = parseInt(document.getElementById(typ + '-slider').value);
   const label = document.getElementById(typ + '-val-label');
   label.textContent = val === 0 ? 'Aus' : val + ' Sek.';
-  label.className = 'settings-row-value' + (val === 0 ? ' off' : '');
+  label.className = 'settings-val' + (val === 0 ? ' off' : '');
   localStorage.setItem(typ + 'Sek', val);
   aktualisiereStartView();
 }
-
 function ladeSlider() {
   const einst = ladeEinstellungen();
   document.getElementById('start-slider').value = einst.startSek;
   document.getElementById('stopp-slider').value = einst.stoppSek;
-  updateSlider('start');
-  updateSlider('stopp');
+  updateSlider('start'); updateSlider('stopp');
 }
-
 function allesDaten() {
   if (confirm('Wirklich alle Daten loeschen?')) {
     localStorage.removeItem('zeiteintraege');
-    aktualisiereStartView();
-    renderVerlauf();
-    renderMonat();
+    aktualisiereStartView(); renderVerlauf(); renderMonat();
     zeigeToast('Alle Daten geloescht');
   }
 }
 
-// ══════════════════════════════════════════
-// BENACHRICHTIGUNGEN
-// ══════════════════════════════════════════
-
 async function sendeNotification(title, body) {
   if (!('Notification' in window)) return;
-  if (Notification.permission === 'default') {
-    await Notification.requestPermission();
-  }
-  if (Notification.permission === 'granted') {
-    new Notification(title, { body, icon: '/icon.png' });
-  }
+  if (Notification.permission === 'default') await Notification.requestPermission();
+  if (Notification.permission === 'granted') new Notification(title, { body });
 }
-
-// ══════════════════════════════════════════
-// NFC URL
-// ══════════════════════════════════════════
 
 function zeigeNfcUrl() {
   const url = window.location.origin + window.location.pathname + '?toggle=1';
   document.getElementById('nfc-url-display').textContent = url;
 }
-
 function pruefeToggleParam() {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('toggle') === '1') {
+  if (new URLSearchParams(window.location.search).get('toggle') === '1') {
     history.replaceState({}, '', window.location.pathname);
-    setTimeout(() => toggleTimer(), 100);
+    setTimeout(() => toggleTimer(), 150);
   }
 }
-
-// ══════════════════════════════════════════
-// TABS
-// ══════════════════════════════════════════
 
 function showTab(tab) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-
-  const pageMap = { start: 'page-start', verlauf: 'page-verlauf', monat: 'page-monat', einst: 'page-einst' };
-  document.getElementById(pageMap[tab]).classList.add('active');
-  document.querySelectorAll('.tab')[['start','verlauf','monat','einst'].indexOf(tab)].classList.add('active');
-
+  const pages = { start:'page-start', verlauf:'page-verlauf', monat:'page-monat', einst:'page-einst' };
+  const idx = ['start','verlauf','monat','einst'].indexOf(tab);
+  document.getElementById(pages[tab]).classList.add('active');
+  document.querySelectorAll('.tab')[idx].classList.add('active');
   if (tab === 'verlauf') renderVerlauf();
   if (tab === 'monat') renderMonat();
   if (tab === 'einst') { ladeSlider(); zeigeNfcUrl(); }
 }
 
-// ══════════════════════════════════════════
-// TOAST
-// ══════════════════════════════════════════
-
-let toastTimeout = null;
+let toastT = null;
 function zeigeToast(text) {
   const t = document.getElementById('toast');
   t.textContent = text;
   t.classList.add('show');
-  if (toastTimeout) clearTimeout(toastTimeout);
-  toastTimeout = setTimeout(() => t.classList.remove('show'), 3500);
+  if (toastT) clearTimeout(toastT);
+  toastT = setTimeout(() => t.classList.remove('show'), 3500);
 }
-
-// ══════════════════════════════════════════
-// INIT
-// ══════════════════════════════════════════
 
 aktualisiereStartView();
 pruefeToggleParam();
