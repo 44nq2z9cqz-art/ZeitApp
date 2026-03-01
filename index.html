@@ -346,6 +346,13 @@ input[type=range]::-webkit-slider-thumb {
 }
 
 #backup-last { font-size: 12px; color: var(--muted); padding: 0 16px 12px; }
+
+@media print {
+  body { background: white; position: static; overflow: visible; }
+  #app { height: auto; overflow: visible; }
+  #tabbar, #page-start, #page-verlauf, #page-monat, #page-einst, #toast { display: none !important; }
+  #print-report { display: block !important; }
+}
 </style>
 </head>
 <body>
@@ -393,6 +400,11 @@ input[type=range]::-webkit-slider-thumb {
       <button class="month-nav-btn" id="month-next-btn" onclick="changeMonth(1)">&#8250;</button>
     </div>
     <div id="monat-content"></div>
+    <div style="padding: 16px 0 8px;">
+      <button onclick="druckeReport()" style="width:100%; background:var(--accent); color:white; border:none; border-radius:12px; padding:14px; font-family:var(--font); font-size:16px; font-weight:600; cursor:pointer;">
+        📄  Monats-Report drucken / als PDF
+      </button>
+    </div>
   </div>
 
   <!-- EINSTELLUNGEN -->
@@ -474,6 +486,10 @@ input[type=range]::-webkit-slider-thumb {
     </div>
     <div style="height:20px"></div>
     </div><!-- end einst-scroll -->
+  </div>
+
+  <!-- PRINT REPORT -->
+  <div id="print-report" style="display:none; padding: 32px; font-family: -apple-system, Helvetica, sans-serif; color: #000;">
   </div>
 
   <!-- TAB BAR -->
@@ -837,6 +853,92 @@ function pruefeToggleParam() {
     history.replaceState({}, '', window.location.pathname);
     setTimeout(() => toggleTimer(), 150);
   }
+}
+
+// ── Report / Drucken ──
+function druckeReport() {
+  const start = new Date(aktuellerMonat.getFullYear(), aktuellerMonat.getMonth(), 1);
+  const ende = new Date(aktuellerMonat.getFullYear(), aktuellerMonat.getMonth() + 1, 1);
+  const eintraege = ladeEintraege()
+    .filter(e => e.ende && new Date(e.start) >= start && new Date(e.start) < ende)
+    .sort((a,b) => a.start - b.start);
+
+  const monatsname = aktuellerMonat.toLocaleDateString('de-DE', {month:'long', year:'numeric'});
+
+  if (eintraege.length === 0) { zeigeToast('Keine Einträge in diesem Monat'); return; }
+
+  const gesamt = eintraege.reduce((s,e) => s + (e.ende - e.start), 0);
+
+  // Gruppieren nach Tag
+  const gruppen = {};
+  eintraege.forEach(e => {
+    if (!gruppen[e.datum]) gruppen[e.datum] = [];
+    gruppen[e.datum].push(e);
+  });
+
+  let rows = '';
+  let prevDatum = '';
+  Object.keys(gruppen).sort().forEach(datum => {
+    const gruppe = gruppen[datum];
+    const d = new Date(datum + 'T12:00:00');
+    const datumStr = d.toLocaleDateString('de-DE', {weekday:'long', day:'2-digit', month:'2-digit', year:'numeric'});
+    const tagesGesamt = gruppe.reduce((s,e) => s + (e.ende - e.start), 0);
+
+    // Datum-Zeile
+    rows += `<tr style="background:#f5f5f5;">
+      <td colspan="3" style="padding:8px 12px; font-weight:600; font-size:13px; color:#333;">${datumStr}</td>
+      <td style="padding:8px 12px; font-weight:700; text-align:right; color:#4a7c59;">${formatDauer(tagesGesamt)}</td>
+    </tr>`;
+
+    // Einträge des Tages
+    gruppe.forEach(e => {
+      rows += `<tr style="border-bottom:1px solid #eee;">
+        <td style="padding:7px 12px; color:#666; font-size:13px;"></td>
+        <td style="padding:7px 12px; font-variant-numeric:tabular-nums;">${formatZeit(e.start)}</td>
+        <td style="padding:7px 12px; font-variant-numeric:tabular-nums;">${formatZeit(e.ende)}</td>
+        <td style="padding:7px 12px; text-align:right; font-variant-numeric:tabular-nums;">${formatDauer(e.ende - e.start)}</td>
+      </tr>`;
+    });
+  });
+
+  const html = `
+    <div style="max-width:700px; margin:0 auto;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:32px; border-bottom:3px solid #4a7c59; padding-bottom:16px;">
+        <div>
+          <div style="font-size:11px; color:#888; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Zeiterfassung</div>
+          <div style="font-size:28px; font-weight:700;">${monatsname}</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:11px; color:#888; text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Gesamtzeit</div>
+          <div style="font-size:28px; font-weight:700; color:#4a7c59;">${formatDauer(gesamt)}</div>
+        </div>
+      </div>
+
+      <table style="width:100%; border-collapse:collapse; font-size:14px;">
+        <thead>
+          <tr style="border-bottom:2px solid #4a7c59;">
+            <th style="padding:8px 12px; text-align:left; font-size:11px; color:#888; text-transform:uppercase; letter-spacing:0.5px;"></th>
+            <th style="padding:8px 12px; text-align:left; font-size:11px; color:#888; text-transform:uppercase; letter-spacing:0.5px;">Start</th>
+            <th style="padding:8px 12px; text-align:left; font-size:11px; color:#888; text-transform:uppercase; letter-spacing:0.5px;">Ende</th>
+            <th style="padding:8px 12px; text-align:right; font-size:11px; color:#888; text-transform:uppercase; letter-spacing:0.5px;">Dauer</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+        <tfoot>
+          <tr style="border-top:2px solid #4a7c59;">
+            <td colspan="3" style="padding:12px; font-weight:700; font-size:15px;">Gesamt</td>
+            <td style="padding:12px; font-weight:700; font-size:15px; text-align:right; color:#4a7c59;">${formatDauer(gesamt)}</td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <div style="margin-top:40px; font-size:11px; color:#aaa; text-align:center;">
+        Erstellt am ${new Date().toLocaleDateString('de-DE', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'})} Uhr
+      </div>
+    </div>`;
+
+  document.getElementById('print-report').innerHTML = html;
+  window.print();
 }
 
 // ── Tabs ──
